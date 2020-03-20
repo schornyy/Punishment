@@ -1,0 +1,8 @@
+name: projectamerica.de_PunishPlugin
+version: ${project.version}
+main: de.schornyy.punishplugin.PunishPlugin
+api-version: 1.13
+authors: [Schornyy]
+
+commands:
+  punish:
