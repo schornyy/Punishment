@@ -2,11 +2,14 @@ package de.schornyy.punishplugin.player;
 
 import de.schornyy.punishplugin.PunishPlugin;
 import de.schornyy.punishplugin.punishment.Reason;
+import de.schornyy.punishplugin.punishment.Warn;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PunishPlayer {
 
@@ -17,6 +20,7 @@ public class PunishPlayer {
     private String unBannedDate, banReason, bannedDate, mutedDate, mutedFrom, bannedFrom, mutedReason, unMutedDate;
     private String player;
     private PunishPlugin plugin = PunishPlugin.getPlugin(PunishPlugin.class);
+    private List<Warn> warns;
 
     public PunishPlayer(String playerName) {
         player = playerName;
@@ -29,6 +33,30 @@ public class PunishPlayer {
 
         getCfg().set("Banned", isBanned());
         getCfg().set("Muted", isMuted());
+
+        if(getCfg().isSet("Warns.")) {
+            for(String i : getCfg().getConfigurationSection("Warns.").getKeys(false)) {
+                if(i == null) break;
+                getCfg().set("Warns." + i, null);
+            }
+
+            try {
+                getCfg().save(getFile());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(warns != null || warns.size() != 0) {
+            int i = 0;
+            for(Warn w : warns) {
+                if(w == null)return;
+                getCfg().set("Warns." + i + ".Date", w.getWarnDate());
+                getCfg().set("Warns." + i + ".Reason", w.getReason());
+                getCfg().set("Warns." + i + ".From", w.getWarnfrom());
+                i++;
+            }
+        }
 
         if(isMuted()) {
             getCfg().set("Muted.MutedDate", getMutedDate());
@@ -55,11 +83,24 @@ public class PunishPlayer {
 
             setBanned(false);
             setMuted(false);
+            warns = new ArrayList<>();
 
             try {
                 getCfg().save(getFile());
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }
+        warns = new ArrayList<>();
+
+        if(getCfg().isSet("Warns.")) {
+            for(String i : getCfg().getConfigurationSection("Warns.").getKeys(false)) {
+                if(i == null) return;
+                String reason = getCfg().getString("Warns." + i + ".Reason");
+                String date = getCfg().getString("Warns." + i + ".Date");
+                String from = getCfg().getString("Warns." + i + ".From");
+                Warn warn = new Warn(reason, date, from);
+                warns.add(warn);
             }
         }
 
@@ -172,5 +213,13 @@ public class PunishPlayer {
 
     public void setUnBannedDate(String unBannedDate) {
         this.unBannedDate = unBannedDate;
+    }
+
+    public List<Warn> getWarns() {
+        return warns;
+    }
+
+    public void setWarns(List<Warn> warns) {
+        this.warns = warns;
     }
 }

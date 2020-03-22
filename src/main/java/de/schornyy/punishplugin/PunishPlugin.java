@@ -1,7 +1,8 @@
 package de.schornyy.punishplugin;
 
-import de.schornyy.punishplugin.commands.PunishCommand;
+import de.schornyy.punishplugin.commands.*;
 import de.schornyy.punishplugin.configs.Config;
+import de.schornyy.punishplugin.listener.PlayerChatListener;
 import de.schornyy.punishplugin.listener.PlayerJoinListener;
 import de.schornyy.punishplugin.listener.PlayerQuitListener;
 import de.schornyy.punishplugin.player.PunishPlayerManager;
@@ -28,6 +29,7 @@ public final class PunishPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        getPunishPlayerManager().saveAllPlayerDatas();
         Bukkit.getConsoleSender().sendMessage(getPunishmentConfig().getMessagesConfig().prefix + "§cwurde deaktiviert!");
     }
 
@@ -35,16 +37,24 @@ public final class PunishPlugin extends JavaPlugin {
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new PlayerJoinListener(), this);
         pluginManager.registerEvents(new PlayerQuitListener(), this);
+        pluginManager.registerEvents(new PlayerChatListener(), this);
     }
 
     private void loadCommands() {
         getCommand("punish").setExecutor(new PunishCommand());
+        getCommand("unpunish").setExecutor(new UnpunishCommand());
+        getCommand("warn").setExecutor(new WarnCommand());
+        getCommand("mute").setExecutor(new MuteCommand());
+        getCommand("unmute").setExecutor(new UnMuteCommand());
+
+        getCommand("punish").setTabCompleter(new PunishCommand());
     }
 
     private void loadInits() {
         punishmentConfig = new Config();
         reasonManager = new ReasonManager();
         punishPlayerManager = new PunishPlayerManager();
+        getPunishPlayerManager().loadAllPlayerDatas();
     }
 
     public Config getPunishmentConfig() {

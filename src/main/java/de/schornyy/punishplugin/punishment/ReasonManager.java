@@ -22,6 +22,31 @@ public class ReasonManager {
         load();
     }
 
+    public boolean raesonExists(String reasonName) {
+        if(storedReasons != null || storedReasons.size() != 0) {
+            for(Reason reason : storedReasons) {
+                if(reason == null)break;
+                if(reason.getReason().equalsIgnoreCase(reasonName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public Reason getReasonByName(String reasonName) {
+        if(storedReasons != null || storedReasons.size() != 0) {
+            for(Reason reason : storedReasons) {
+                if(reason == null) break;
+                if(reason.getReason().equalsIgnoreCase(reasonName)) {
+                    return reason;
+                }
+            }
+        }
+        return null;
+    }
+
+
     private void load() {
         if(!getFile().exists()) {
 
@@ -38,11 +63,11 @@ public class ReasonManager {
             for(String reason : getCfg().getConfigurationSection("Reason.").getKeys(false)) {
                 if(reason == null) return;
                 String path = "Reason." + reason;
-                Reason r = new Reason(path + ".Name");
+                Reason r = new Reason(getCfg().getString(path + ".Name"));
                 if(getCfg().isSet(path + ".Seconds")) {
                     r.setSeconds(getCfg().getInt(path + ".Seconds"));
                 }
-                if(getCfg().isSet(path + ".Minutes")) {
+                if(getCfg().isSet(path + ".Minits")) {
                     r.setMinits(getCfg().getInt(path + ".Minutes"));
                 }
                 if(getCfg().isSet(path + ".Hours")) {

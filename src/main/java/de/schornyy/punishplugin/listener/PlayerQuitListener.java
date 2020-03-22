@@ -16,5 +16,9 @@ public class PlayerQuitListener implements Listener {
         Player p = e.getPlayer();
         PunishPlayer punishPlayer = plugin.getPunishPlayerManager().getStoredPunishPlayer().get(p.getName());
         punishPlayer.save();
+
+        if(punishPlayer.isBanned()) {
+            e.setQuitMessage(null);
+        }
     }
 }
